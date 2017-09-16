@@ -9,12 +9,14 @@ module.exports = {
             description: 'Just testing around',
             init(api) {
                 api.log.debug("This is the start")
-                api.on('message', message => {
-                    console.log(message)
+
+                api.addCommand('speak', (from, to, args) => {
+                    api.say(to, `${from}: ${args}`)
                 })
-            },
-            postInit(api) {
-                api.log.debug("I run just after everyone else starts")
+
+                api.addCommand('action', (from, to, args) => {
+                    api.action(to, args)
+                })
             }
         }
     ]

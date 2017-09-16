@@ -4,6 +4,8 @@ const config = require('./config')
 
 let plugins = {}
 let events = {}
+let commands = {}
+let client
 
 log.setLevel(1)
 
@@ -15,12 +17,31 @@ if (typeof config.nick !== 'string') {
 } else {
     loadPlugins()
 
-    let client = new irc.Client(config.server, config.nick, {
+    client = new irc.Client(config.server, config.nick, {
         channels: config.channels
     })
 
     client.addListener('message', (from, to, msg) => {
         runEvent('message', { message: msg, from, to })
+
+        if (msg.startsWith(config.commandPrefix)) {
+            let message = msg.slice(config.commandPrefix.length)
+            if (message.length !== 0) {
+                let command = message.split(' ')[0]
+                let args = ''
+
+                if (message.indexOf(' ') >= 0)
+                    args = message.slice(message.indexOf(' ')+1)
+                
+                if (typeof commands[command] === 'function') {
+                    commands[command](from, to, args)
+                }
+            }
+        }
+    })
+
+    client.addListener('action', (from, to, msg) => {
+        runEvent('action', { message: msg, from, to })
     })
 
     client.addListener('error', (message) => {
@@ -45,7 +66,17 @@ function getAPI(plugin) {
             }
             events[event].push(cb)
         },
-        plugins
+        addCommand(command, cb) {
+            commands[command] = cb
+        },
+        say(to, message) {
+            client.say(to, message)
+        },
+        action(to, message) {
+            client.action(to, message)
+        },
+        plugins,
+        client,
     }
 }
 
