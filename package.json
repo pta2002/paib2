@@ -1,0 +1,19 @@
+{
+  "name": "paib2",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "npm run lint ; node paib.js",
+    "lint": "standard",
+    "lint-fix": "standard --fix",
+    "test": "standard && mocha"
+  },
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "irc": "^0.5.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.0",
+    "mocha": "^3.4.2",
+    "standard": "^10.0.2"
+  }
+}
