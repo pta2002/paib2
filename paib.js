@@ -7,19 +7,25 @@ let events = {}
 let commands = {}
 let client
 
-log.setLevel(1)
+if (config.debug)
+    log.setLevel(1)
 
 // Check the config
 if (typeof config.nick !== 'string') {
     log.error("`nick` must be a string")
-} else if (typeof config.server !== 'string') {
-    log.error("`server` must be a string")
+} else if (typeof config.server !== 'object') {
+    log.error("`server` must be an object")
 } else {
     loadPlugins()
 
-    client = new irc.Client(config.server, config.nick, {
-        channels: config.channels
-    })
+    client = new irc.Client(config.server.address, config.nick, Object.assign({
+        channels: config.channels,
+        secure: config.server.secure,
+        port: config.server.port,
+        userName: config.username,
+        realName: config.realname,
+        debug: config.debug,
+    }, config.other))
 
     client.addListener('message', (from, to, msg) => {
         runEvent('message', { message: msg, from, to })
@@ -82,6 +88,8 @@ function getAPI(plugin) {
 
 function loadPlugins() {
     plugins = {}
+    commands = {}
+    events = {}
     log.info("Loading plugins...")
     if (config.plugins) {
         log.debug(`Found ${config.plugins.length} plugin(s)`)
@@ -119,7 +127,7 @@ function loadPlugins() {
                 log.debug(`Ran ${plugin.name}.postInit`)
             }
         }
-        log.info(`Loaded ${plugins.length} plugin(s)`)
+        log.info(`Loaded ${Object.keys(plugins).length} plugin(s)`)
     } else {
         log.info("No plugins found")
     }

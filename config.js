@@ -1,6 +1,12 @@
 module.exports = {
     nick: 'paib2',
-    server: 'irc.afternet.org',
+    username: 'paib',
+    realname: 'An IRC bot',
+    server: {
+        address: 'irc.afternet.org',
+        port: 6697,
+        secure: true
+    },
     channels: ['#bottest'],
     commandPrefix: '~',
     plugins: [

@@ -1,6 +1,6 @@
 {
   "name": "paib2",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "start": "npm run lint ; node paib.js",
     "lint": "standard",
